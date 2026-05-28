@@ -138,6 +138,72 @@ def mudar_status_tarefa(nome_da_task: str, novo_status: str) -> str:
     except Exception as e:
         return f"Erro: {str(e)}"
 
+
+def deletar_tarefa(nome_da_task:str) -> str:
+    try:
+        client = TrelloClient(
+            api_key= API_KEY,
+            api_secret= API_SECRET,
+            token = TOKEN
+        )
+        boards = client.list_boards()
+        meu_board = [b for b in boards if b.name == 'Tasks'][0]
+        listas = meu_board.list_lists()
+
+        for lista in listas:
+            card = next(
+                (e for e in lista.list_cards() if e.name.upper() == nome_da_task.upper()),
+                None
+            )
+            if card:
+                card.delete()
+                return f"Card '{nome_da_task}' deletado com sucesso"
+        return f"Card '{nome_da_task}' não encontrado"
+    except Exception as e:
+        return f"Erro: {str(e)}"
+
+def editar_tarefa(nome_da_task: str, novo_nome: str = None, nova_descricao: str = None, novo_due_date: str = None) -> str:
+    try:
+        client = TrelloClient(
+            api_key=API_KEY,
+            api_secret=API_SECRET,
+            token=TOKEN
+        )
+
+        boards = client.list_boards()
+        meu_board = [b for b in boards if b.name == 'Tasks'][0]
+        listas = meu_board.list_lists()
+
+        for lista in listas:
+            cards = lista.list_cards()
+            card = next(
+                (c for c in cards if c.name.lower() == nome_da_task.lower()),
+                None
+            )
+            if card:
+                if novo_nome:
+                    card.set_name(novo_nome)
+                if nova_descricao:
+                    card.set_description(nova_descricao)
+                if novo_due_date:
+                    try:
+                        date_obj = datetime.strptime(novo_due_date, "%d/%m/%Y")
+                        formatted = date_obj.strftime("%Y-%m-%dT23:59:00.000Z")
+                        card.set_due(formatted)
+                    except ValueError:
+                        return "Data inválida. Use o formato DD/MM/AAAA."
+
+                return f"'{nome_da_task}' atualizada com sucesso."
+
+        return f"Card '{nome_da_task}' não encontrado."
+    except Exception as e:
+        return f"Erro: {str(e)}"
+                
+            
+
+
+
+
 root_agent = Agent(
     model='gemini-2.5-flash',
     name='root_agent',
@@ -150,6 +216,8 @@ root_agent = Agent(
     e depois vá perguntando se tem mais tarefas para o dia até que o usuário diga que não tem mais tarefas para o dia.
     Sempre fale que a tarefa foi criada com sucesso.
     Ao perguntar a data de vencimento de uma tarefa, peça no formato DD/MM/AAAA.
+    Deletar tarefas quando o usuário pedir para remover ou excluir
+    Editar tarefas existentes = pode alterar nome, descrição e data de vencimento
     1. Adicionar novas tarefas com nome e descrição
           2. Listar todas as tarefas ou filtrar por status
           3. Marcar tarefas como concluídas
@@ -159,5 +227,5 @@ root_agent = Agent(
     
     
     """,
-   tools=[get_temporal_context, adicionar_tarefa, listar_tarefas, mudar_status_tarefa],
+   tools=[get_temporal_context, adicionar_tarefa, listar_tarefas, mudar_status_tarefa, deletar_tarefa, editar_tarefa],
 )
