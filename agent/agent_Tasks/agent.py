@@ -229,3 +229,4 @@ root_agent = Agent(
     """,
    tools=[get_temporal_context, adicionar_tarefa, listar_tarefas, mudar_status_tarefa, deletar_tarefa, editar_tarefa],
 )
+
