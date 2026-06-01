@@ -78,7 +78,7 @@ Na tela "Novo aplicativo", preencha os seguintes campos:
 
 | Campo | Valor Exemplo | Descrição |
 |-------|---------------|-----------|
-| **Nome do aplicativo** | `Agent Tasks` ou `Trwllo Agent` | Nome que identificará seu aplicativo |
+| **Nome do aplicativo** | `Agent Tasks` ou `Trello Agent` | Nome que identificará seu aplicativo |
 | **Área de trabalho** | Selecione seu workspace | Workspace onde o app será gerenciado |
 | **Email** | `me@company.com` | Email para contato sobre o aplicativo |
 | **Contato de suporte** | `support@company.com` | Email ou link para suporte aos usuários |
